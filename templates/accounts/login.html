@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Django POS | Sign in</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/pos-enhancements.css' %}" rel="stylesheet">
+
+</head>
+
+<body class="pos-login-page d-flex align-items-center py-4">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-xl-11 col-lg-12 col-md-11">
+
+                <div class="card pos-login-card o-hidden my-4">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-flex">
+                                <div class="pos-login-showcase w-100">
+                                    <div>
+                                        <span class="pos-login-mark"><i class="fas fa-cash-register"></i></span>
+                                        <h1>Your store,<br>in good hands.</h1>
+                                        <p>One simple workspace to keep products, customers, and sales moving.</p>
+                                    </div>
+                                    <div>
+                                        <div class="pos-login-feature"><i class="fas fa-check-circle"></i>Stay on top of daily sales</div>
+                                        <div class="pos-login-feature"><i class="fas fa-check-circle"></i>Manage your inventory with ease</div>
+                                        <div class="pos-login-feature"><i class="fas fa-check-circle"></i>Keep customer details close</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="pos-login-form">
+                                    <span class="small text-uppercase font-weight-bold text-primary">Django POS</span>
+                                    <h2 class="mt-2 mb-2">Welcome back</h2>
+                                    <p class="text-muted mb-4">Sign in to continue to your workspace.</p>
+                                    {% if msg %}
+                                    <div class="alert alert-danger" role="alert">{{ msg | safe }}</div>
+                                    {% endif %}
+                                    <form class="user" method="post">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <label for="{{ form.username.id_for_label }}">Username</label>
+                                            {{ form.username }}
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="{{ form.password.id_for_label }}">Password</label>
+                                            {{ form.password }}
+                                        </div>
+                                        <button type="submit" name="login" class="btn btn-primary btn-user btn-block mt-4">Sign in <i class="fas fa-arrow-right ml-2"></i></button>
+                                    </form>
+                                    <p class="small text-muted text-center mt-4 mb-0">Secure access to your point of sale.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+</body>
+
+</html>

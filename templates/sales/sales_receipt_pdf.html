@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bill #{{ sale.id }} | Django POS</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #172b4d;
+            background: #f3f6fb;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 32px 16px;
+            background: #f3f6fb;
+        }
+
+        .receipt-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 0 auto 18px;
+        }
+
+        .receipt-actions a,
+        .receipt-actions button {
+            display: inline-flex;
+            align-items: center;
+            min-height: 42px;
+            padding: 0 16px;
+            border: 0;
+            border-radius: 8px;
+            color: #fff;
+            background: #3157d5;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .receipt-actions .secondary { background: #62728b; }
+
+        .receipt {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 48px;
+            border: 1px solid #e3eaf3;
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 12px 35px rgba(27, 49, 86, 0.08);
+        }
+
+        .receipt-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            padding-bottom: 26px;
+            border-bottom: 1px solid #e7edf5;
+        }
+
+        .brand {
+            margin: 0 0 5px;
+            color: #3157d5;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        h1 { margin: 0; font-size: 28px; }
+        .muted { color: #74839b; }
+        .receipt-meta { text-align: right; line-height: 1.8; }
+        .customer { padding: 22px 0; }
+        .customer-label { margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+        .customer-name { font-weight: 700; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead th {
+            padding: 12px 8px;
+            border-bottom: 1px solid #dfe6f0;
+            color: #74839b;
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        tbody td { padding: 13px 8px; border-bottom: 1px solid #edf1f6; }
+        .number, .quantity { text-align: center; }
+        .amount { text-align: right; white-space: nowrap; }
+
+        .totals {
+            width: 290px;
+            max-width: 100%;
+            margin: 22px 0 0 auto;
+        }
+
+        .totals div {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 7px 0;
+        }
+
+        .totals .grand-total {
+            margin-top: 6px;
+            padding-top: 14px;
+            border-top: 1px solid #dfe6f0;
+            color: #172b4d;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .thanks {
+            margin: 34px 0 0;
+            padding-top: 20px;
+            border-top: 1px dashed #dfe6f0;
+            color: #74839b;
+            text-align: center;
+        }
+
+        @page { size: A4; margin: 16mm; }
+
+        @media print {
+            :root, body { background: #fff; }
+            body { padding: 0; }
+            .receipt-actions { display: none; }
+            .receipt {
+                max-width: none;
+                padding: 0;
+                border: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            thead { display: table-header-group; }
+            tr { break-inside: avoid; }
+        }
+
+        @media (max-width: 560px) {
+            body { padding: 16px 10px; }
+            .receipt { padding: 24px 18px; }
+            .receipt-header { flex-direction: column; }
+            .receipt-meta { text-align: left; }
+            table { font-size: 12px; }
+            thead th, tbody td { padding: 10px 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-actions">
+        <button type="button" onclick="window.print()">Print bill</button>
+        <a href="{% url 'sales:sales_receipt_pdf' sale.id %}">Open PDF</a>
+        <a class="secondary" href="{% url 'sales:sales_list' %}">Back to sales</a>
+    </div>
+    <main class="receipt">
+        <header class="receipt-header">
+            <div>
+                <p class="brand">Django POS</p>
+                <h1>Sales receipt</h1>
+            </div>
+            <div class="receipt-meta">
+                <div><strong>Bill #{{ sale.id }}</strong></div>
+                <div class="muted">{{ sale.date_added|date:"M d, Y · H:i" }}</div>
+            </div>
+        </header>
+
+        <section class="customer">
+            <div class="customer-label muted">Billed to</div>
+            <div class="customer-name">{{ sale.customer.get_full_name }}</div>
+            {% if sale.customer.email %}<div class="muted">{{ sale.customer.email }}</div>{% endif %}
+            {% if sale.customer.phone %}<div class="muted">{{ sale.customer.phone }}</div>{% endif %}
+        </section>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="number">#</th>
+                    <th>Item</th>
+                    <th class="quantity">Qty</th>
+                    <th class="amount">Unit price</th>
+                    <th class="amount">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detail in details %}
+                <tr>
+                    <td class="number">{{ forloop.counter }}</td>
+                    <td>{{ detail.product.name }}</td>
+                    <td class="quantity">{{ detail.quantity }}</td>
+                    <td class="amount">Rs. {{ detail.price|floatformat:2 }}</td>
+                    <td class="amount">Rs. {{ detail.total_detail|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <section class="totals" aria-label="Bill totals">
+            <div><span class="muted">Subtotal</span><span>Rs. {{ sale.sub_total|floatformat:2 }}</span></div>
+            <div><span class="muted">Tax ({{ sale.tax_percentage|floatformat:2 }}%)</span><span>Rs. {{ sale.tax_amount|floatformat:2 }}</span></div>
+            <div class="grand-total"><span>Amount due</span><span>Rs. {{ sale.grand_total|floatformat:2 }}</span></div>
+            <div><span class="muted">Amount received</span><span>Rs. {{ sale.amount_payed|floatformat:2 }}</span></div>
+            <div><span class="muted">Change</span><span>Rs. {{ sale.amount_change|floatformat:2 }}</span></div>
+        </section>
+
+        <p class="thanks">Thank you for your purchase!</p>
+    </main>
+</body>
+</html>
