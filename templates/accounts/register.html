@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Django POS | Create account</title>
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/pos-enhancements.css' %}" rel="stylesheet">
+</head>
+
+<body class="pos-login-page d-flex align-items-center py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-11 col-lg-12 col-md-11">
+                <div class="card pos-login-card o-hidden my-4">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-flex">
+                                <div class="pos-login-showcase w-100">
+                                    <div>
+                                        <span class="pos-login-mark"><i class="fas fa-cash-register"></i></span>
+                                        <h1>Make your store<br>work smarter.</h1>
+                                        <p>Create your account to manage products, customers, and sales in one place.</p>
+                                    </div>
+                                    <div>
+                                        <div class="pos-login-feature"><i class="fas fa-check-circle"></i>Keep inventory organized</div>
+                                        <div class="pos-login-feature"><i class="fas fa-check-circle"></i>Track sales with ease</div>
+                                        <div class="pos-login-feature"><i class="fas fa-check-circle"></i>Get started in minutes</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="pos-login-form">
+                                    <span class="small text-uppercase font-weight-bold text-primary">Django POS</span>
+                                    <h2 class="mt-2 mb-2">Create your account</h2>
+                                    <p class="text-muted mb-4">Fill in the details below to get started.</p>
+
+                                    {% if success %}
+                                    <div class="alert alert-success" role="status">Your account has been created. <a href="{% url 'authentication:login' %}">Sign in</a>.</div>
+                                    {% endif %}
+
+                                    <form method="post" novalidate>
+                                        {% csrf_token %}
+                                        {% for field in form %}
+                                        <div class="form-group">
+                                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                            {{ field }}
+                                            {% for error in field.errors %}<div class="small text-danger mt-1">{{ error }}</div>{% endfor %}
+                                        </div>
+                                        {% endfor %}
+                                        {% if form.non_field_errors %}
+                                        <div class="alert alert-danger" role="alert">{% for error in form.non_field_errors %}{{ error }}{% endfor %}</div>
+                                        {% endif %}
+                                        <button type="submit" class="btn btn-primary btn-user btn-block mt-4">Create account <i class="fas fa-arrow-right ml-2"></i></button>
+                                    </form>
+                                    <p class="small text-center mt-4 mb-0">Already have an account? <a href="{% url 'authentication:login' %}" class="font-weight-bold">Sign in</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
